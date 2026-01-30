@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .upload-form {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.05);
+        }
+
+        .gallery-info {
+            padding: 15px;
+        }
+
+        .gallery-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .gallery-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .modal-description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+            
+            .upload-form {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📸 Image Gallery Viewer</h1>
+            <p class="subtitle">Upload images via URL and view them in a beautiful grid layout</p>
+        </header>
+
+        <section class="upload-section">
+            <h2 style="margin-bottom: 20px; color: #555;">➕ Add New Image</h2>
+            <form class="upload-form" id="imageForm">
+                <div class="form-group">
+                    <label for="imageUrl">Image URL:</label>
+                    <input type="text" id="imageUrl" placeholder="https://example.com/image.jpg" required>
+                </div>
+                <div class="form-group">
+                    <label for="imageTitle">Title:</label>
+                    <input type="text" id="imageTitle" placeholder="Image Title" required>
+                </div>
+                <div class="form-group">
+                    <label for="imageDescription">Description:</label>
+                    <textarea id="imageDescription" placeholder="Brief description of the image..."></textarea>
+                </div>
+                <div class="form-group" style="align-self: flex-end;">
+                    <button type="submit" class="btn">Add Image</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="gallery-section">
+            <h2 style="color: white; margin-bottom: 20px; text-align: center;">🖼️ Image Gallery</h2>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Images will be added here dynamically -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal for popup view -->
+    <div class="modal" id="imageModal">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <div class="modal-content">
+            <img src="" alt="Large Image" class="modal-image" id="modalImage">
+            <div class="modal-info">
+                <h3 class="modal-title" id="modalTitle"></h3>
+                <p class="modal-description" id="modalDescription"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample images for demonstration
+        const sampleImages = [
+            {
+                url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=500',
+                title: 'Mountain Landscape',
+                description: 'Beautiful mountain view with clear blue sky and lush greenery.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1476820865390-c52aeebb9891?w=500',
+                title: 'City Nightlife',
+                description: 'Vibrant city lights and urban atmosphere at night.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1469474968028-56623e02e42e?w=500',
+                title: 'Ocean Sunset',
+                description: 'Peaceful sunset over the calm ocean waters.'
+            }
+        ];
+
+        // Store images in localStorage
+        let images = JSON.parse(localStorage.getItem('galleryImages')) || sampleImages;
+
+        // DOM Elements
+        const galleryGrid = document.getElementById('galleryGrid');
+        const imageForm = document.getElementById('imageForm');
+        const imageModal = document.getElementById('imageModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+
+        // Display images in grid
+        function displayImages() {
+            galleryGrid.innerHTML = '';
+            
+            images.forEach((image, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                galleryItem.innerHTML = `
+                    <img src="${image.url}" alt="${image.title}" class="gallery-image">
+                    <div class="gallery-info">
+                        <h3 class="gallery-title">${image.title}</h3>
+                        <p class="gallery-description">${image.description}</p>
+                    </div>
+                `;
+                
+                galleryItem.addEventListener('click', () => openModal(image));
+                galleryGrid.appendChild(galleryItem);
+            });
+        }
+
+        // Open modal with image details
+        function openModal(image) {
+            modalImage.src = image.url;
+            modalTitle.textContent = image.title;
+            modalDescription.textContent = image.description;
+            imageModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+        }
+
+        // Close modal
+        function closeModalHandler() {
+            imageModal.classList.remove('active');
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Event Listeners
+        imageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const imageUrl = document.getElementById('imageUrl').value;
+            const imageTitle = document.getElementById('imageTitle').value;
+            const imageDescription = document.getElementById('imageDescription').value;
+            
+            // Add new image to array
+            images.unshift({
+                url: imageUrl,
+                title: imageTitle,
+                description: imageDescription
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('galleryImages', JSON.stringify(images));
+            
+            // Reset form
+            imageForm.reset();
+            
+            // Refresh display
+            displayImages();
+            
+            // Show success message
+            alert('Image added successfully!');
+        });
+
+        closeModal.addEventListener('click', closeModalHandler);
+        
+        // Close modal when clicking outside the content
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                closeModalHandler();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+                closeModalHandler();
+            }
+        });
+
+        // Initial display
+        displayImages();
+    </script>
+</body>
+</html>
