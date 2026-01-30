@@ -3,319 +3,817 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Gallery</title>
+    <title>Image Gallery Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px 0;
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
+            --bg-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-radius: 16px;
+            --box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+            --box-shadow-hover: 0 15px 50px rgba(99, 102, 241, 0.25);
+            --box-shadow-lg: 0 25px 80px rgba(0, 0, 0, 0.2);
         }
-        .header-section {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
-            padding: 30px;
-        }
-        .gallery-section {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-        .form-section {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
-        .form-section.collapsed {
-            max-height: 0;
+
+        * {
+            margin: 0;
             padding: 0;
-            opacity: 0;
-            overflow: hidden;
+            box-sizing: border-box;
         }
-        .form-section.expanded {
-            max-height: 1000px;
-            opacity: 1;
-            overflow: visible;
-        }
-        .toggle-btn {
+
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            color: var(--text-primary);
             position: relative;
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            max-width: 1600px;
+            position: relative;
+        }
+
+        /* Floating Action Button */
+        .fab-container {
+            position: fixed;
+            top: 80px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .fab-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--bg-gradient);
             color: white;
             border: none;
-            padding: 12px 25px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fab-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .fab-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .fab-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .fab-btn:active {
+            transform: scale(0.95);
+        }
+
+        .fab-label {
+            position: absolute;
+            right: 75px;
+            background: white;
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 30px;
             font-weight: 600;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
-        .toggle-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+
+        .fab-btn:hover .fab-label {
+            opacity: 1;
+            transform: translateX(0);
         }
-        .toggle-btn i {
-            margin-right: 8px;
-            transition: transform 0.3s ease;
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
         }
-        .toggle-btn.collapsed i {
-            transform: rotate(0deg);
+
+        .page-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
         }
-        .toggle-btn.expanded i {
-            transform: rotate(180deg);
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
         }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            padding: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
         .image-card {
             background: white;
-            border-radius: 12px;
+            border-radius: var(--border-radius);
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: var(--box-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            margin-bottom: 25px;
             position: relative;
+            border: 2px solid transparent;
         }
+
         .image-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: var(--box-shadow-hover);
+            border-color: var(--primary-color);
         }
+
+        .image-wrapper {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
         .image-card img {
             width: 100%;
-            height: 220px;
+            height: 100%;
             object-fit: cover;
-            transition: transform 0.3s ease;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .image-card:hover img {
-            transform: scale(1.05);
+            transform: scale(1.15);
         }
+
         .image-overlay {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
             color: white;
-            padding: 12px 15px;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
+            padding: 25px;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .image-card:hover .image-overlay {
             transform: translateY(0);
+            opacity: 1;
         }
+
         .image-title {
-            font-weight: 600;
-            font-size: 1.05rem;
-            margin-bottom: 4px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: white;
         }
+
         .image-description {
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             opacity: 0.95;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.9);
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
+        /* Modal Form */
         .modal-content {
-            border-radius: 15px;
+            border-radius: 24px;
             border: none;
+            box-shadow: var(--box-shadow-lg);
+            overflow: hidden;
         }
+
         .modal-header {
-            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+            background: var(--bg-gradient);
             color: white;
-            border-radius: 15px 15px 0 0 !important;
+            padding: 28px 32px;
+            border-bottom: none;
         }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .modal-header .btn-close {
             filter: invert(1) brightness(1.2);
+            width: 32px;
+            height: 32px;
+            opacity: 1;
+            margin: 0;
+            padding: 0;
         }
+
+        .modal-body {
+            padding: 40px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 16px 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            background: white;
+        }
+
+        .preview-container {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 350px;
+            border-radius: 16px;
+            display: none;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            border: 4px solid #f3f4f6;
+            transition: all 0.4s ease;
+        }
+
+        .preview-image.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .btn-submit {
+            background: var(--bg-gradient);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: var(--box-shadow);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow-hover);
+            color: white;
+        }
+
+        .btn-submit:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-submit .spinner-border {
+            width: 24px;
+            height: 24px;
+            border-width: 3px;
+        }
+
+        .status-alert {
+            margin-top: 20px;
+            border-radius: 14px;
+            padding: 18px 24px;
+            font-weight: 600;
+            display: none;
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Loading State */
         .loading-container {
-            min-height: 400px;
+            min-height: 500px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 30px;
         }
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-top: 5px solid #185a9d;
+
+        .spinner-large {
+            width: 100px;
+            height: 100px;
+            border: 8px solid rgba(99, 102, 241, 0.2);
+            border-top: 8px solid var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .setup-guide {
-            background: #e3f2fd;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
+
+        .loading-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
         }
-        .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+
+        .loading-subtext {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
         }
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .empty-icon {
+            font-size: 6rem;
+            color: #d1d5db;
+            margin-bottom: 30px;
+        }
+
+        .empty-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .empty-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .empty-btn {
+            background: var(--bg-gradient);
             color: white;
             border: none;
-            padding: 12px;
-            font-weight: 600;
-            border-radius: 10px;
+            padding: 16px 45px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            box-shadow: var(--box-shadow);
             transition: all 0.3s ease;
-            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
         }
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+
+        .empty-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow-hover);
+            color: white;
         }
-        .btn-submit:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-            transform: none;
+
+        /* Error State */
+        .error-container {
+            text-align: center;
+            padding: 60px 40px;
         }
-        .preview-image {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 10px;
-            margin-top: 15px;
-            display: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+        .error-icon {
+            font-size: 6rem;
+            color: #ef4444;
+            margin-bottom: 30px;
         }
-        .status-alert {
-            margin-top: 15px;
-            border-radius: 10px;
-            padding: 12px 15px;
-            font-weight: 500;
-            display: none;
+
+        .error-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 20px;
         }
+
+        .error-message {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .error-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .error-btn {
+            padding: 14px 35px;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-retry {
+            background: var(--bg-gradient);
+            color: white;
+            border: none;
+            box-shadow: var(--box-shadow);
+        }
+
+        .btn-retry:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow-hover);
+            color: white;
+        }
+
+        .btn-guide {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-guide:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Image Modal */
+        #imageModal .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        #imageModal .modal-header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 24px 28px;
+        }
+
+        #imageModal .modal-body {
+            padding: 40px;
+        }
+
+        #imageModal img {
+            max-height: 75vh;
+            object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        #imageModal .modal-description {
+            color: var(--text-secondary);
+            font-style: italic;
+            line-height: 2;
+            font-size: 1.15rem;
+            margin-top: 25px;
+        }
+
+        #imageModal .modal-footer {
+            padding: 20px 40px;
+            border-top: none;
+        }
+
+        #imageModal .btn-close {
+            filter: invert(1);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: white;
+            border-radius: 14px;
+            padding: 15px 30px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-title {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+
+        .stats-count {
+            background: var(--primary-color);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
         @media (max-width: 768px) {
-            .image-card img { height: 180px; }
-            .header-section { padding: 20px; }
-            .gallery-section, .form-section { padding: 20px; }
-            .toggle-btn { width: 100%; }
+            .fab-container {
+                top: 70px;
+                right: 20px;
+            }
+
+            .fab-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.3rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .page-subtitle {
+                font-size: 1rem;
+            }
+
+            .modal-body {
+                padding: 25px;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fab-container {
+                top: 65px;
+                right: 15px;
+            }
+
+            .fab-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .fab-label {
+                display: none;
+            }
+
+            .page-header {
+                margin-bottom: 25px;
+                padding: 20px 0;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .empty-icon, .error-icon {
+                font-size: 4.5rem;
+            }
+
+            .empty-title, .error-title {
+                font-size: 1.8rem;
+            }
+
+            .error-btns {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .error-btn {
+                width: 100%;
+                max-width: 300px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header-section text-center">
-            <h1 class="display-5 fw-bold mb-3">🖼️ Image Gallery</h1>
-            <p class="lead text-muted mb-3">Click any image to view full size</p>
-            <button class="btn toggle-btn" id="toggleFormBtn">
-                <i class="bi bi-plus-circle"></i> <span id="toggleText">Add New Image</span>
-            </button>
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-images"></i> Image Gallery
+            </h1>
+            <p class="page-subtitle">Browse and manage your image collection</p>
         </div>
 
-        <!-- Save to Google Sheet Form Section -->
-        <div class="form-section collapsed" id="formSection">
-            <h3 class="mb-4 text-center">💾 Save to Google Sheet</h3>
-            <form id="dataForm">
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <label for="imageUrl" class="form-label fw-bold">ImageRelation URL</label>
-                        <input 
-                            type="url" 
-                            class="form-control" 
-                            id="imageUrl" 
-                            placeholder="https://example.com/image.jpg"
-                            required
-                        >
-                        <img id="imagePreview" class="preview-image mt-2" alt="Image Preview">
-                    </div>
-                    
-                    <div class="col-md-12 mb-3">
-                        <label for="title" class="form-label fw-bold">Title (शीर्षक)</label>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="title" 
-                            placeholder="Enter title here"
-                            required
-                        >
-                    </div>
-                    
-                    <div class="col-md-12 mb-4">
-                        <label for="description" class="form-label fw-bold">Description (विवरण)</label>
-                        <textarea 
-                            class="form-control" 
-                            id="description" 
-                            rows="3"
-                            placeholder="Enter description here"
-                            required
-                        ></textarea>
-                    </div>
-                    
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-submit" id="submitBtn">
-                            <span id="buttonText">💾 Save to Google Sheet</span>
-                        </button>
-                    </div>
-                </div>
-            </form>
-            
-            <div class="status-alert" id="statusMessage"></div>
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <span class="stats-title">Total Images:</span>
+            <span class="stats-count" id="imageCount">0</span>
         </div>
 
         <!-- Loading State -->
-        <div class="gallery-section text-center" id="loadingSection">
-            <div class="loading-container">
-                <div class="spinner"></div>
-                <p class="h5 text-primary mt-3">Loading images...</p>
-                <p class="text-muted">Fetching from Google Sheets</p>
-            </div>
+        <div class="loading-container" id="loadingSection">
+            <div class="spinner-large"></div>
+            <p class="loading-text">Loading Gallery</p>
+            <p class="loading-subtext">Fetching images from database...</p>
         </div>
 
         <!-- Error State -->
-        <div class="gallery-section text-center d-none" id="errorSection">
-            <div class="alert alert-danger p-4 mb-4" role="alert">
-                <h5 class="alert-heading">⚠️ Failed to load images</h5>
-                <p id="errorMessage" class="mb-3">Please check your setup</p>
-                <button class="btn btn-primary me-2" onclick="location.reload()">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Retry
-                </button>
-                <button class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#setupGuide">
-                    Setup Guide
-                </button>
+        <div class="error-container d-none" id="errorSection">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
             </div>
+            <h3 class="error-title">Failed to Load Images</h3>
+            <p class="error-message" id="errorMessage">Please check your setup and try again.</p>
             
-            <div class="collapse" id="setupGuide">
-                <div class="setup-guide">
-                    <h5 class="mb-3">🔧 Correct Setup Steps:</h5>
-                    <ol class="text-start">
-                        <li><strong>Share your sheet publicly:</strong><br>
-                            Click <strong>Share → General access → "Anyone with the link" → Viewer → Done</strong></li>
-                        <li><strong>Get your Sheet ID:</strong><br>
-                            From browser URL: <code>https://docs.google.com/spreadsheets/d/<span class="text-danger">YOUR_ID_HERE</span>/edit</code></li>
-                        <li><strong>Update this HTML file:</strong><br>
-                            Find <code>GOOGLE_SHEET_ID = '...'</code> and replace with your ID</li>
-                        <li><strong>Test first with our demo sheet:</strong><br>
-                            Use ID: <code class="bg-light p-1">1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code></li>
-                    </ol>
-                    <div class="alert alert-success mt-3 mb-0">
-                        <strong>✅ Demo Sheet ID (works immediately):</strong><br>
-                        <code class="bg-dark text-white p-2 d-block mt-2">1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
-                    </div>
-                </div>
+            <div class="error-btns">
+                <button class="btn error-btn btn-retry" onclick="location.reload()">
+                    <i class="fas fa-redo me-2"></i> Retry
+                </button>
+                <button class="btn error-btn btn-guide" data-bs-toggle="modal" data-bs-target="#setupModal">
+                    <i class="fas fa-question-circle me-2"></i> Setup Guide
+                </button>
             </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state d-none" id="emptySection">
+            <div class="empty-icon">
+                <i class="fas fa-images"></i>
+            </div>
+            <h3 class="empty-title">Gallery is Empty</h3>
+            <p class="empty-subtitle">No images found. Start by adding your first image to the gallery!</p>
+            <button class="empty-btn" data-bs-toggle="modal" data-bs-target="#addImageModal">
+                <i class="fas fa-plus-circle"></i> Add First Image
+            </button>
         </div>
 
         <!-- Gallery Grid -->
-        <div class="gallery-section d-none" id="gallerySection">
-            <div class="row" id="imageGrid"></div>
+        <div class="gallery-grid d-none" id="gallerySection">
+            <!-- Images will be inserted here dynamically -->
         </div>
     </div>
 
-    <!-- Image Modal -->
+    <!-- Floating Action Button -->
+    <div class="fab-container">
+        <button class="fab-btn" data-bs-toggle="modal" data-bs-target="#addImageModal" title="Add New Image">
+            <span class="fab-label">Add Image</span>
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <!-- Add Image Modal -->
+    <div class="modal fade" id="addImageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-cloud-upload-alt"></i> Add New Image
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="dataForm">
+                        <div class="row g-4">
+                            <div class="col-md-7">
+                                <div class="mb-3">
+                                    <label for="imageUrl" class="form-label">
+                                        <i class="fas fa-link"></i> Image URL
+                                    </label>
+                                    <input 
+                                        type="url" 
+                                        class="form-control" 
+                                        id="imageUrl" 
+                                        placeholder="https://example.com/image.jpg"
+                                        required
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="preview-container">
+                                    <img id="imagePreview" class="preview-image" alt="Image Preview">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">
+                                        <i class="fas fa-heading"></i> Title
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="title" 
+                                        placeholder="Enter a descriptive title"
+                                        required
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">
+                                        <i class="fas fa-align-left"></i> Description
+                                    </label>
+                                    <textarea 
+                                        class="form-control" 
+                                        id="description" 
+                                        rows="4"
+                                        placeholder="Write a detailed description of the image..."
+                                        required
+                                    ></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-submit" id="submitBtn">
+                                    <i class="fas fa-save me-2"></i> <span id="buttonText">Save to Gallery</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="status-alert" id="statusMessage"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image View Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
@@ -323,9 +821,50 @@
                     <h5 class="modal-title" id="modalTitle">Image Preview</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center p-4">
-                    <img src="" class="img-fluid rounded shadow" id="modalImage" alt="Full size image" style="max-height: 80vh; object-fit: contain;">
-                    <p class="mt-3 text-muted fst-italic" id="modalDescription"></p>
+                <div class="modal-body text-center">
+                    <img src="" class="img-fluid" id="modalImage" alt="Full size image">
+                    <p class="modal-description" id="modalDescription">No description available</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Guide Modal -->
+    <div class="modal fade" id="setupModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Setup Guide</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5 class="mb-4"><i class="fas fa-check-circle text-success me-2"></i> Follow These Steps:</h5>
+                    <ol class="text-start" style="line-height: 2;">
+                        <li class="mb-3">
+                            <strong>Share your Google Sheet publicly:</strong><br>
+                            Click <strong>Share → General access → "Anyone with the link" → Viewer → Done</strong>
+                        </li>
+                        <li class="mb-3">
+                            <strong>Get your Sheet ID:</strong><br>
+                            From browser URL: <code>https://docs.google.com/spreadsheets/d/<span class="text-primary">YOUR_ID_HERE</span>/edit</code>
+                        </li>
+                        <li class="mb-3">
+                            <strong>Update this HTML file:</strong><br>
+                            Find <code>GOOGLE_SHEET_ID = '...'</code> and replace with your ID
+                        </li>
+                        <li>
+                            <strong>Test with demo sheet:</strong><br>
+                            Use ID: <code class="bg-light p-2">1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
+                        </li>
+                    </ol>
+                    <div class="alert alert-info mt-4 mb-0">
+                        <strong><i class="fas fa-lightbulb me-2"></i>Pro Tip:</strong> Wait 1-2 minutes after making your sheet public for changes to propagate.
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -335,10 +874,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.js"></script>
     <script>
         // ════════════════════════════════════════════════════════════════════════════════
-        // 🔑 CONFIGURATION - REPLACE WITH YOUR SHEET ID
+        // 🔑 CONFIGURATION
         // ════════════════════════════════════════════════════════════════════════════════
         const GOOGLE_SHEET_ID = '14e9RYeZjBoMgVTJO3I2OAdBTpIttKaCKb8NaC_pN_aY';
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTaT5VOh9BwClGUzQKR6QkEJKqHrvIFAQ2uT43I4n0LUqfl1tqTlprm6k2_lqwKZFtug/exec';
@@ -346,9 +884,8 @@
         // ════════════════════════════════════════════════════════════════════════════════
         // DOM Elements
         // ════════════════════════════════════════════════════════════════════════════════
-        const toggleFormBtn = document.getElementById('toggleFormBtn');
-        const formSection = document.getElementById('formSection');
-        const toggleText = document.getElementById('toggleText');
+        const addImageModalEl = document.getElementById('addImageModal');
+        const addImageModal = new bootstrap.Modal(addImageModalEl);
         const form = document.getElementById('dataForm');
         const imageUrlInput = document.getElementById('imageUrl');
         const imagePreview = document.getElementById('imagePreview');
@@ -358,34 +895,16 @@
         
         const loadingSection = document.getElementById('loadingSection');
         const errorSection = document.getElementById('errorSection');
+        const emptySection = document.getElementById('emptySection');
         const gallerySection = document.getElementById('gallerySection');
-        const imageGrid = document.getElementById('imageGrid');
+        const imageGrid = document.getElementById('gallerySection');
         const errorMessageEl = document.getElementById('errorMessage');
+        const imageCountEl = document.getElementById('imageCount');
+        
         const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
         const modalImage = document.getElementById('modalImage');
         const modalTitle = document.getElementById('modalTitle');
         const modalDescription = document.getElementById('modalDescription');
-
-        // ════════════════════════════════════════════════════════════════════════════════
-        // Toggle Form Section
-        // ════════════════════════════════════════════════════════════════════════════════
-        toggleFormBtn.addEventListener('click', function() {
-            if (formSection.classList.contains('collapsed')) {
-                formSection.classList.remove('collapsed');
-                formSection.classList.add('expanded');
-                toggleText.textContent = 'Hide Form';
-                this.classList.add('expanded');
-                this.classList.remove('collapsed');
-                this.querySelector('i').className = 'bi bi-dash-circle';
-            } else {
-                formSection.classList.remove('expanded');
-                formSection.classList.add('collapsed');
-                toggleText.textContent = 'Add New Image';
-                this.classList.remove('expanded');
-                this.classList.add('collapsed');
-                this.querySelector('i').className = 'bi bi-plus-circle';
-            }
-        });
 
         // ════════════════════════════════════════════════════════════════════════════════
         // Image Preview
@@ -394,9 +913,9 @@
             const url = this.value.trim();
             if (url) {
                 imagePreview.src = url;
-                imagePreview.style.display = 'block';
+                imagePreview.classList.add('show');
             } else {
-                imagePreview.style.display = 'none';
+                imagePreview.classList.remove('show');
             }
         });
 
@@ -406,94 +925,73 @@
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Get form values
             const imageUrl = imageUrlInput.value.trim();
             const title = document.getElementById('title').value.trim();
             const description = document.getElementById('description').value.trim();
             
-            // Validate
             if (!imageUrl || !title || !description) {
-                showStatus('⚠️ सबै फिल्डहरू भर्नुहोस्।', 'danger');
+                showStatus('⚠️ Please fill in all fields.', 'alert-danger');
                 return;
             }
 
-            // Show loading state
             submitBtn.disabled = true;
-            buttonText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> सेभ हुँदैछ...';
+            buttonText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
             statusMessage.style.display = 'none';
 
             try {
-                // Prepare data to send
                 const data = {
                     image_url: imageUrl,
                     title: title,
                     description: description
                 };
 
-                // Send POST request to Google Apps Script
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
-                // Since we use no-cors, we can't read the response
-                // But if no error is thrown, assume success
-                showStatus('✅ डाटा सफलतापूर्वक सेभ भयो! ग्यालरी रिफ्रेस हुँदैछ...', 'success');
+                showStatus('✅ Image successfully added! Refreshing gallery...', 'alert-success');
                 
                 // Reset form
                 form.reset();
-                imagePreview.style.display = 'none';
+                imagePreview.classList.remove('show');
                 
-                // Reload gallery after 1 second
+                // Close modal after 1.5 seconds
                 setTimeout(() => {
+                    addImageModal.hide();
                     loadGallery();
-                    // Hide form after successful save
-                    formSection.classList.remove('expanded');
-                    formSection.classList.add('collapsed');
-                    toggleText.textContent = 'Add New Image';
-                    toggleFormBtn.classList.remove('expanded');
-                    toggleFormBtn.classList.add('collapsed');
-                    toggleFormBtn.querySelector('i').className = 'bi bi-plus-circle';
                 }, 1500);
                 
             } catch (error) {
                 console.error('Error:', error);
-                showStatus('❌ त्रुटि: डाटा सेभ गर्न सकिएन। कृपया पुन: प्रयास गर्नुहोस्।', 'danger');
+                showStatus('❌ Failed to save image. Please try again.', 'alert-danger');
             } finally {
-                // Reset button state
                 submitBtn.disabled = false;
-                buttonText.textContent = '💾 Save to Google Sheet';
+                buttonText.innerHTML = '<i class="fas fa-save me-2"></i> Save to Gallery';
             }
         });
 
-        // Show status message
+        // ════════════════════════════════════════════════════════════════════════════════
+        // Status Message
+        // ════════════════════════════════════════════════════════════════════════════════
         function showStatus(message, type) {
-            statusMessage.textContent = message;
-            statusMessage.className = `status-alert alert alert-${type}`;
+            statusMessage.innerHTML = message;
+            statusMessage.className = `status-alert alert ${type}`;
             statusMessage.style.display = 'block';
             
-            // Auto hide after 5 seconds
-            if (type === 'success') {
-                setTimeout(() => {
-                    statusMessage.style.display = 'none';
-                }, 5000);
+            if (type === 'alert-success') {
+                setTimeout(() => { statusMessage.style.display = 'none'; }, 5000);
             }
         }
 
         // ════════════════════════════════════════════════════════════════════════════════
-        // Load images from Google Sheets using GVIZ (works with public sheets)
+        // Load Gallery
         // ════════════════════════════════════════════════════════════════════════════════
         async function loadGallery() {
             if (GOOGLE_SHEET_ID === 'YOUR_GOOGLE_SHEET_ID_HERE') {
-                showError(`
-                    ⚠️ Please update GOOGLE_SHEET_ID in the script!<br>
-                    Use your Sheet ID from the browser URL:<br>
-                    <code>https://docs.google.com/spreadsheets/d/<span class="text-danger">YOUR_ID_HERE</span>/edit</code>
-                `);
+                showError('Please update GOOGLE_SHEET_ID in the script!');
                 return;
             }
 
@@ -501,37 +999,32 @@
             
             try {
                 const response = await fetch(sheetUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status} - Sheet might not be shared publicly`);
-                }
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const text = await response.text();
                 const images = parseGVIZCSV(text);
                 
                 if (images.length === 0) {
-                    throw new Error('No images found. Check your sheet has "image_url" column with valid URLs.');
+                    showEmptyState();
+                } else {
+                    renderGallery(images);
                 }
-                
-                renderGallery(images);
                 
             } catch (error) {
                 console.error('Error:', error);
-                showError(`
-                    ❌ ${error.message}<br><br>
+                showError(`Failed to load images: ${error.message}<br><br>
                     <strong>Fix:</strong><br>
-                    1. Click <strong>Share → "Anyone with the link" → Viewer → Done</strong><br>
-                    2. Wait 1 minute for changes to propagate<br>
-                    3. Or test with demo ID: <code>1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
-                `);
+                    1. Make sure your sheet is shared publicly<br>
+                    2. Wait 1-2 minutes for changes to propagate<br>
+                    3. Check your Sheet ID is correct`);
             }
         }
 
-        // Parse GVIZ CSV response (handles Google's special CSV format)
+        // ════════════════════════════════════════════════════════════════════════════════
+        // Parse CSV
+        // ════════════════════════════════════════════════════════════════════════════════
         function parseGVIZCSV(csvText) {
-            // GVIZ returns: google.visualization.Query.setResponse({json})
-            // But sometimes returns plain CSV - handle both
             if (csvText.includes('google.visualization.Query')) {
-                // Extract JSON from GVIZ response
                 const jsonMatch = csvText.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
                 if (!jsonMatch) return [];
                 
@@ -540,7 +1033,6 @@
                     const rows = data.table.rows;
                     const cols = data.table.cols;
                     
-                    // Find column indices
                     const urlCol = cols.findIndex(c => /url|image|link/i.test(c.label.toLowerCase()));
                     const titleCol = cols.findIndex(c => /title|name/i.test(c.label.toLowerCase()));
                     const descCol = cols.findIndex(c => /description|desc/i.test(c.label.toLowerCase()));
@@ -564,7 +1056,6 @@
                     return [];
                 }
             } else {
-                // Plain CSV format
                 const lines = csvText.split('\n').filter(line => line.trim());
                 if (lines.length < 2) return [];
                 
@@ -591,31 +1082,65 @@
             }
         }
 
-        // Render gallery
+        // ════════════════════════════════════════════════════════════════════════════════
+        // Render Gallery
+        // ════════════════════════════════════════════════════════════════════════════════
         function renderGallery(images) {
             loadingSection.classList.add('d-none');
+            errorSection.classList.add('d-none');
+            emptySection.classList.add('d-none');
             gallerySection.classList.remove('d-none');
+            
+            imageCountEl.textContent = images.length;
+            
             imageGrid.innerHTML = '';
             
-            images.forEach((img, index) => {
-                const colDiv = document.createElement('div');
-                colDiv.className = 'col-xl-3 col-lg-4 col-md-6 col-sm-12';
-                colDiv.innerHTML = `
-                    <div class="image-card">
+            images.forEach((img) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'image-card';
+                cardDiv.innerHTML = `
+                    <div class="image-wrapper">
                         <img src="${escapeHtml(img.url)}" alt="${escapeHtml(img.title)}" 
-                             onerror="this.closest('.image-card').style.opacity='0.6'; this.closest('.image-card').querySelector('.image-title').textContent='⚠️ Image Error'">
+                             onerror="this.closest('.image-card').style.opacity='0.5'; this.closest('.image-card').querySelector('.image-title').textContent='Image Error'">
                         <div class="image-overlay">
                             <div class="image-title">${escapeHtml(img.title)}</div>
-                            <div class="image-description">${escapeHtml(img.description)}</div>
+                            <div class="image-description">${escapeHtml(img.description || 'No description')}</div>
                         </div>
                     </div>
                 `;
-                colDiv.querySelector('.image-card').addEventListener('click', () => showModal(img));
-                imageGrid.appendChild(colDiv);
+                cardDiv.addEventListener('click', () => showModal(img));
+                imageGrid.appendChild(cardDiv);
             });
         }
 
-        // Show modal
+        // ════════════════════════════════════════════════════════════════════════════════
+        // Empty State
+        // ════════════════════════════════════════════════════════════════════════════════
+        function showEmptyState() {
+            loadingSection.classList.add('d-none');
+            errorSection.classList.add('d-none');
+            gallerySection.classList.add('d-none');
+            emptySection.classList.remove('d-none');
+            
+            imageCountEl.textContent = '0';
+        }
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // Show Error
+        // ════════════════════════════════════════════════════════════════════════════════
+        function showError(message) {
+            loadingSection.classList.add('d-none');
+            emptySection.classList.add('d-none');
+            gallerySection.classList.add('d-none');
+            errorSection.classList.remove('d-none');
+            
+            errorMessageEl.innerHTML = message;
+            imageCountEl.textContent = '0';
+        }
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // Show Modal
+        // ════════════════════════════════════════════════════════════════════════════════
         function showModal(image) {
             modalImage.src = image.url;
             modalTitle.textContent = image.title;
@@ -623,21 +1148,18 @@
             imageModal.show();
         }
 
-        // Show error
-        function showError(message) {
-            loadingSection.classList.add('d-none');
-            errorSection.classList.remove('d-none');
-            errorMessageEl.innerHTML = message;
-        }
-
+        // ════════════════════════════════════════════════════════════════════════════════
         // Escape HTML
+        // ════════════════════════════════════════════════════════════════════════════════
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
+        // ════════════════════════════════════════════════════════════════════════════════
         // Initialize
+        // ════════════════════════════════════════════════════════════════════════════════
         document.addEventListener('DOMContentLoaded', () => {
             loadGallery();
         });
