@@ -41,20 +41,51 @@
             position: relative;
         }
 
+        /* Compact Image Counter - Top Right */
+        .image-counter {
+            position: fixed;
+            top: 25px;
+            right: 100px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 999;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .image-counter:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .image-counter i {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .image-counter span {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
         /* Floating Action Button */
         .fab-container {
             position: fixed;
-            top: 80px;
+            top: 20px;
             right: 30px;
             z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
         }
 
         .fab-btn {
-            width: 60px;
-            height: 60px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: var(--bg-gradient);
             color: white;
@@ -63,7 +94,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
@@ -97,23 +128,24 @@
             transform: scale(0.95);
         }
 
-        .fab-label {
+        .fab-tooltip {
             position: absolute;
-            right: 75px;
+            right: 70px;
             background: white;
             color: var(--text-primary);
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 30px;
             font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-size: 0.85rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
             opacity: 0;
-            transform: translateX(20px);
+            transform: translateX(15px);
             transition: all 0.3s ease;
             white-space: nowrap;
+            z-index: 1001;
         }
 
-        .fab-btn:hover .fab-label {
+        .fab-btn:hover .fab-tooltip {
             opacity: 1;
             transform: translateX(0);
         }
@@ -126,19 +158,19 @@
         }
 
         .page-title {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 800;
             background: var(--bg-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .page-subtitle {
             color: var(--text-secondary);
-            font-size: 1.2rem;
-            max-width: 700px;
+            font-size: 1.1rem;
+            max-width: 650px;
             margin: 0 auto;
         }
 
@@ -146,8 +178,8 @@
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-            padding: 10px;
+            gap: 28px;
+            padding: 5px;
         }
 
         @media (max-width: 768px) {
@@ -155,12 +187,52 @@
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 gap: 20px;
             }
+            
+            .image-counter {
+                top: 20px;
+                right: 90px;
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .fab-container {
+                top: 18px;
+                right: 20px;
+            }
+            
+            .fab-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
         }
 
         @media (max-width: 480px) {
             .gallery-grid {
                 grid-template-columns: 1fr;
                 gap: 15px;
+            }
+            
+            .image-counter {
+                top: 15px;
+                right: 80px;
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .fab-container {
+                top: 12px;
+                right: 15px;
+            }
+            
+            .fab-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+            
+            .fab-tooltip {
+                display: none;
             }
         }
 
@@ -176,7 +248,7 @@
         }
 
         .image-card:hover {
-            transform: translateY(-12px) scale(1.03);
+            transform: translateY(-10px) scale(1.02);
             box-shadow: var(--box-shadow-hover);
             border-color: var(--primary-color);
         }
@@ -191,11 +263,11 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .image-card:hover img {
-            transform: scale(1.15);
+            transform: scale(1.12);
         }
 
         .image-overlay {
@@ -205,8 +277,8 @@
             right: 0;
             background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
             color: white;
-            padding: 25px;
-            transform: translateY(30px);
+            padding: 22px;
+            transform: translateY(25px);
             opacity: 0;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -218,8 +290,8 @@
 
         .image-title {
             font-weight: 700;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -227,9 +299,9 @@
         }
 
         .image-description {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             opacity: 0.95;
-            line-height: 1.7;
+            line-height: 1.6;
             color: rgba(255, 255, 255, 0.9);
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -248,29 +320,29 @@
         .modal-header {
             background: var(--bg-gradient);
             color: white;
-            padding: 28px 32px;
+            padding: 26px 30px;
             border-bottom: none;
         }
 
         .modal-title {
             font-weight: 700;
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .modal-header .btn-close {
             filter: invert(1) brightness(1.2);
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             opacity: 1;
             margin: 0;
             padding: 0;
         }
 
         .modal-body {
-            padding: 40px;
+            padding: 35px;
         }
 
         .form-label {
@@ -286,7 +358,7 @@
         .form-control, .form-select {
             border: 2px solid #e5e7eb;
             border-radius: 14px;
-            padding: 16px 20px;
+            padding: 15px 18px;
             font-size: 1rem;
             transition: all 0.3s ease;
             background: #f9fafb;
@@ -299,16 +371,16 @@
         }
 
         .preview-container {
-            margin-top: 25px;
+            margin-top: 22px;
             text-align: center;
         }
 
         .preview-image {
             max-width: 100%;
-            max-height: 350px;
+            max-height: 320px;
             border-radius: 16px;
             display: none;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.22);
             border: 4px solid #f3f4f6;
             transition: all 0.4s ease;
         }
@@ -327,14 +399,14 @@
             background: var(--bg-gradient);
             color: white;
             border: none;
-            padding: 18px;
+            padding: 16px;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             border-radius: 14px;
             transition: all 0.3s ease;
             width: 100%;
             box-shadow: var(--box-shadow);
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .btn-submit:hover {
@@ -351,22 +423,22 @@
         }
 
         .btn-submit .spinner-border {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-width: 3px;
         }
 
         .status-alert {
-            margin-top: 20px;
+            margin-top: 18px;
             border-radius: 14px;
-            padding: 18px 24px;
+            padding: 16px 22px;
             font-weight: 600;
             display: none;
             animation: slideDown 0.4s ease;
         }
 
         @keyframes slideDown {
-            from { transform: translateY(-30px); opacity: 0; }
+            from { transform: translateY(-25px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
@@ -377,14 +449,14 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 30px;
+            gap: 28px;
         }
 
         .spinner-large {
-            width: 100px;
-            height: 100px;
-            border: 8px solid rgba(99, 102, 241, 0.2);
-            border-top: 8px solid var(--primary-color);
+            width: 90px;
+            height: 90px;
+            border: 7px solid rgba(99, 102, 241, 0.2);
+            border-top: 7px solid var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -395,40 +467,40 @@
         }
 
         .loading-text {
-            font-size: 2rem;
+            font-size: 1.9rem;
             font-weight: 700;
             color: var(--primary-color);
         }
 
         .loading-subtext {
             color: var(--text-secondary);
-            font-size: 1.2rem;
+            font-size: 1.15rem;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 80px 40px;
+            padding: 70px 30px;
         }
 
         .empty-icon {
-            font-size: 6rem;
+            font-size: 5.5rem;
             color: #d1d5db;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .empty-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .empty-subtitle {
             color: var(--text-secondary);
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            max-width: 600px;
+            font-size: 1.15rem;
+            margin-bottom: 35px;
+            max-width: 580px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -437,15 +509,15 @@
             background: var(--bg-gradient);
             color: white;
             border: none;
-            padding: 16px 45px;
+            padding: 15px 42px;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             border-radius: 50px;
             box-shadow: var(--box-shadow);
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .empty-btn:hover {
@@ -457,43 +529,43 @@
         /* Error State */
         .error-container {
             text-align: center;
-            padding: 60px 40px;
+            padding: 55px 30px;
         }
 
         .error-icon {
-            font-size: 6rem;
+            font-size: 5.5rem;
             color: #ef4444;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .error-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
             color: #ef4444;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .error-message {
             color: var(--text-secondary);
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 40px;
-            max-width: 700px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 35px;
+            max-width: 680px;
             margin-left: auto;
             margin-right: auto;
         }
 
         .error-btns {
             display: flex;
-            gap: 20px;
+            gap: 18px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .error-btn {
-            padding: 14px 35px;
+            padding: 13px 32px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             border-radius: 50px;
             transition: all 0.3s ease;
         }
@@ -534,30 +606,30 @@
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: white;
             border-radius: 20px 20px 0 0 !important;
-            padding: 24px 28px;
+            padding: 22px 26px;
         }
 
         #imageModal .modal-body {
-            padding: 40px;
+            padding: 35px;
         }
 
         #imageModal img {
             max-height: 75vh;
             object-fit: contain;
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 18px 55px rgba(0, 0, 0, 0.32);
         }
 
         #imageModal .modal-description {
             color: var(--text-secondary);
             font-style: italic;
-            line-height: 2;
-            font-size: 1.15rem;
-            margin-top: 25px;
+            line-height: 1.9;
+            font-size: 1.1rem;
+            margin-top: 22px;
         }
 
         #imageModal .modal-footer {
-            padding: 20px 40px;
+            padding: 18px 35px;
             border-top: none;
         }
 
@@ -565,110 +637,42 @@
             filter: invert(1);
         }
 
-        /* Stats Bar */
-        .stats-bar {
-            background: white;
-            border-radius: 14px;
-            padding: 15px 30px;
-            box-shadow: var(--box-shadow);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stats-title {
-            font-weight: 700;
-            font-size: 1.3rem;
-            color: var(--text-primary);
-        }
-
-        .stats-count {
-            background: var(--primary-color);
-            color: white;
-            padding: 6px 20px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        @media (max-width: 768px) {
-            .fab-container {
-                top: 70px;
-                right: 20px;
-            }
-
-            .fab-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 1.3rem;
-            }
-
+        @media (max-width: 480px) {
             .page-title {
-                font-size: 2rem;
+                font-size: 1.9rem;
             }
-
+            
             .page-subtitle {
                 font-size: 1rem;
             }
-
-            .modal-body {
-                padding: 25px;
-            }
-
-            .stats-bar {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .fab-container {
-                top: 65px;
-                right: 15px;
-            }
-
-            .fab-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-
-            .fab-label {
-                display: none;
-            }
-
-            .page-header {
-                margin-bottom: 25px;
-                padding: 20px 0;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
+            
             .empty-icon, .error-icon {
-                font-size: 4.5rem;
+                font-size: 4.2rem;
             }
-
+            
             .empty-title, .error-title {
-                font-size: 1.8rem;
+                font-size: 1.7rem;
             }
-
+            
             .error-btns {
                 flex-direction: column;
                 align-items: center;
             }
-
+            
             .error-btn {
                 width: 100%;
-                max-width: 300px;
+                max-width: 280px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Compact Image Counter - Top Right -->
+    <div class="image-counter">
+        <i class="fas fa-images"></i>
+        <span id="imageCount">0</span> Images
+    </div>
+
     <div class="container">
         <!-- Header -->
         <div class="page-header">
@@ -676,12 +680,6 @@
                 <i class="fas fa-images"></i> Image Gallery
             </h1>
             <p class="page-subtitle">Browse and manage your image collection</p>
-        </div>
-
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <span class="stats-title">Total Images:</span>
-            <span class="stats-count" id="imageCount">0</span>
         </div>
 
         <!-- Loading State -->
@@ -730,7 +728,7 @@
     <!-- Floating Action Button -->
     <div class="fab-container">
         <button class="fab-btn" data-bs-toggle="modal" data-bs-target="#addImageModal" title="Add New Image">
-            <span class="fab-label">Add Image</span>
+            <span class="fab-tooltip">Add Image</span>
             <i class="fas fa-plus"></i>
         </button>
     </div>
