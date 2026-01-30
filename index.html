@@ -25,6 +25,50 @@
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
+        .form-section {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        .form-section.collapsed {
+            max-height: 0;
+            padding: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .form-section.expanded {
+            max-height: 1000px;
+            opacity: 1;
+            overflow: visible;
+        }
+        .toggle-btn {
+            position: relative;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        .toggle-btn i {
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+        .toggle-btn.collapsed i {
+            transform: rotate(0deg);
+        }
+        .toggle-btn.expanded i {
+            transform: rotate(180deg);
+        }
         .image-card {
             background: white;
             border-radius: 12px;
@@ -116,10 +160,49 @@
             padding: 20px;
             margin-top: 20px;
         }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-submit:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .status-alert {
+            margin-top: 15px;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-weight: 500;
+            display: none;
+        }
         @media (max-width: 768px) {
             .image-card img { height: 180px; }
             .header-section { padding: 20px; }
-            .gallery-section { padding: 20px; }
+            .gallery-section, .form-section { padding: 20px; }
+            .toggle-btn { width: 100%; }
         }
     </style>
 </head>
@@ -127,7 +210,60 @@
     <div class="container">
         <div class="header-section text-center">
             <h1 class="display-5 fw-bold mb-3">🖼️ Image Gallery</h1>
-            <p class="lead text-muted mb-0">Click any image to view full size</p>
+            <p class="lead text-muted mb-3">Click any image to view full size</p>
+            <button class="btn toggle-btn" id="toggleFormBtn">
+                <i class="bi bi-plus-circle"></i> <span id="toggleText">Add New Image</span>
+            </button>
+        </div>
+
+        <!-- Save to Google Sheet Form Section -->
+        <div class="form-section collapsed" id="formSection">
+            <h3 class="mb-4 text-center">💾 Save to Google Sheet</h3>
+            <form id="dataForm">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="imageUrl" class="form-label fw-bold">ImageRelation URL</label>
+                        <input 
+                            type="url" 
+                            class="form-control" 
+                            id="imageUrl" 
+                            placeholder="https://example.com/image.jpg"
+                            required
+                        >
+                        <img id="imagePreview" class="preview-image mt-2" alt="Image Preview">
+                    </div>
+                    
+                    <div class="col-md-12 mb-3">
+                        <label for="title" class="form-label fw-bold">Title (शीर्षक)</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="title" 
+                            placeholder="Enter title here"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="col-md-12 mb-4">
+                        <label for="description" class="form-label fw-bold">Description (विवरण)</label>
+                        <textarea 
+                            class="form-control" 
+                            id="description" 
+                            rows="3"
+                            placeholder="Enter description here"
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-submit" id="submitBtn">
+                            <span id="buttonText">💾 Save to Google Sheet</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="status-alert" id="statusMessage"></div>
         </div>
 
         <!-- Loading State -->
@@ -199,17 +335,27 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.js"></script>
     <script>
         // ════════════════════════════════════════════════════════════════════════════════
         // 🔑 CONFIGURATION - REPLACE WITH YOUR SHEET ID
         // ════════════════════════════════════════════════════════════════════════════════
-        // ✅ USE YOUR STANDARD SHEET ID (from browser URL)
-        // Example demo sheet (works immediately):
-        const GOOGLE_SHEET_ID = '14e9RYeZjBoMgVTJO3I2OAdBTpIttKaCKb8NaC_pN_aY'; // ← REPLACE WITH YOUR ID
+        const GOOGLE_SHEET_ID = '14e9RYeZjBoMgVTJO3I2OAdBTpIttKaCKb8NaC_pN_aY';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTaT5VOh9BwClGUzQKR6QkEJKqHrvIFAQ2uT43I4n0LUqfl1tqTlprm6k2_lqwKZFtug/exec';
         
         // ════════════════════════════════════════════════════════════════════════════════
         // DOM Elements
         // ════════════════════════════════════════════════════════════════════════════════
+        const toggleFormBtn = document.getElementById('toggleFormBtn');
+        const formSection = document.getElementById('formSection');
+        const toggleText = document.getElementById('toggleText');
+        const form = document.getElementById('dataForm');
+        const imageUrlInput = document.getElementById('imageUrl');
+        const imagePreview = document.getElementById('imagePreview');
+        const submitBtn = document.getElementById('submitBtn');
+        const buttonText = document.getElementById('buttonText');
+        const statusMessage = document.getElementById('statusMessage');
+        
         const loadingSection = document.getElementById('loadingSection');
         const errorSection = document.getElementById('errorSection');
         const gallerySection = document.getElementById('gallerySection');
@@ -219,6 +365,124 @@
         const modalImage = document.getElementById('modalImage');
         const modalTitle = document.getElementById('modalTitle');
         const modalDescription = document.getElementById('modalDescription');
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // Toggle Form Section
+        // ════════════════════════════════════════════════════════════════════════════════
+        toggleFormBtn.addEventListener('click', function() {
+            if (formSection.classList.contains('collapsed')) {
+                formSection.classList.remove('collapsed');
+                formSection.classList.add('expanded');
+                toggleText.textContent = 'Hide Form';
+                this.classList.add('expanded');
+                this.classList.remove('collapsed');
+                this.querySelector('i').className = 'bi bi-dash-circle';
+            } else {
+                formSection.classList.remove('expanded');
+                formSection.classList.add('collapsed');
+                toggleText.textContent = 'Add New Image';
+                this.classList.remove('expanded');
+                this.classList.add('collapsed');
+                this.querySelector('i').className = 'bi bi-plus-circle';
+            }
+        });
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // Image Preview
+        // ════════════════════════════════════════════════════════════════════════════════
+        imageUrlInput.addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url) {
+                imagePreview.src = url;
+                imagePreview.style.display = 'block';
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // Save to Google Sheet
+        // ════════════════════════════════════════════════════════════════════════════════
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const imageUrl = imageUrlInput.value.trim();
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            
+            // Validate
+            if (!imageUrl || !title || !description) {
+                showStatus('⚠️ सबै फिल्डहरू भर्नुहोस्।', 'danger');
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            buttonText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> सेभ हुँदैछ...';
+            statusMessage.style.display = 'none';
+
+            try {
+                // Prepare data to send
+                const data = {
+                    image_url: imageUrl,
+                    title: title,
+                    description: description
+                };
+
+                // Send POST request to Google Apps Script
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Since we use no-cors, we can't read the response
+                // But if no error is thrown, assume success
+                showStatus('✅ डाटा सफलतापूर्वक सेभ भयो! ग्यालरी रिफ्रेस हुँदैछ...', 'success');
+                
+                // Reset form
+                form.reset();
+                imagePreview.style.display = 'none';
+                
+                // Reload gallery after 1 second
+                setTimeout(() => {
+                    loadGallery();
+                    // Hide form after successful save
+                    formSection.classList.remove('expanded');
+                    formSection.classList.add('collapsed');
+                    toggleText.textContent = 'Add New Image';
+                    toggleFormBtn.classList.remove('expanded');
+                    toggleFormBtn.classList.add('collapsed');
+                    toggleFormBtn.querySelector('i').className = 'bi bi-plus-circle';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('❌ त्रुटि: डाटा सेभ गर्न सकिएन। कृपया पुन: प्रयास गर्नुहोस्।', 'danger');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                buttonText.textContent = '💾 Save to Google Sheet';
+            }
+        });
+
+        // Show status message
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-alert alert alert-${type}`;
+            statusMessage.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 5000);
+            }
+        }
 
         // ════════════════════════════════════════════════════════════════════════════════
         // Load images from Google Sheets using GVIZ (works with public sheets)
