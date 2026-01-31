@@ -34,13 +34,44 @@ min-height: 100vh;
 font-family: 'Poppins', sans-serif;
 color: var(--dark);
 overflow-x: hidden;
+position: relative;
 }
+/* Top-left Stat Badges */
+.stat-badges {
+position: fixed;
+top: 15px;
+left: 15px;
+z-index: 1000;
+display: flex;
+gap: 8px;
+}
+.stat-badge {
+background: rgba(255, 255, 255, 0.95);
+backdrop-filter: blur(10px);
+border-radius: 50px;
+padding: 6px 14px;
+font-size: 0.85rem;
+font-weight: 600;
+box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+display: flex;
+align-items: center;
+gap: 6px;
+border: 1px solid rgba(255,255,255,0.4);
+}
+.stat-badge i {
+font-size: 1rem;
+}
+.stat-badge.total { color: var(--primary); }
+.stat-badge.images { color: var(--success); }
+.stat-badge.links { color: var(--info); }
+
 .container {
 max-width: 1400px;
 margin: 0 auto;
 padding: 20px;
+margin-top: 60px;
 }
-/* Header Section */
+/* Header Section - Title Only */
 .header-section {
 background: rgba(255, 255, 255, 0.95);
 backdrop-filter: blur(10px);
@@ -61,41 +92,7 @@ background-clip: text;
 margin-bottom: 15px;
 letter-spacing: -0.5px;
 }
-.header-subtitle {
-font-size: 1.2rem;
-color: var(--gray);
-margin-bottom: 25px;
-max-width: 700px;
-margin-left: auto;
-margin-right: auto;
-line-height: 1.7;
-}
-.stats-container {
-display: flex;
-justify-content: center;
-gap: 30px;
-margin-top: 20px;
-flex-wrap: wrap;
-}
-.stat-item {
-background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-padding: 15px 25px;
-border-radius: 12px;
-min-width: 150px;
-box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-}
-.stat-number {
-font-size: 2rem;
-font-weight: 700;
-color: var(--primary);
-display: block;
-}
-.stat-label {
-font-size: 0.9rem;
-color: var(--gray);
-text-transform: uppercase;
-letter-spacing: 1px;
-}
+
 /* Floating Action Button */
 .fab-container {
 position: fixed;
@@ -207,6 +204,20 @@ transform: translateY(-2px);
 .tab-btn i {
 font-size: 1.1rem;
 }
+
+/* Search Input */
+.search-container {
+margin-top: 20px;
+max-width: 500px;
+margin-left: auto;
+margin-right: auto;
+}
+.search-container input {
+border-radius: 50px;
+padding-left: 20px;
+padding-right: 20px;
+}
+
 /* Grid Layout */
 .media-grid {
 display: grid;
@@ -234,6 +245,15 @@ width: 55px;
 height: 55px;
 font-size: 1.5rem;
 }
+.stat-badges {
+top: 10px;
+left: 10px;
+gap: 6px;
+}
+.stat-badge {
+padding: 4px 10px;
+font-size: 0.75rem;
+}
 }
 @media (max-width: 480px) {
 .media-grid {
@@ -246,22 +266,11 @@ padding: 25px 15px;
 .header-title {
 font-size: 2rem;
 }
-.header-subtitle {
-font-size: 1rem;
-}
 .tab-buttons {
 flex-direction: column;
 align-items: center;
 }
 .tab-btn {
-width: 100%;
-max-width: 300px;
-}
-.stats-container {
-flex-direction: column;
-align-items: center;
-}
-.stat-item {
 width: 100%;
 max-width: 300px;
 }
@@ -277,8 +286,12 @@ font-size: 1.3rem;
 .fab-tooltip {
 display: none;
 }
+.stat-badges {
+display: none;
 }
-/* Image Card */
+}
+
+/* === IMAGE CARD: KEPT EXACTLY AS BEFORE === */
 .image-card {
 background: white;
 border-radius: var(--border-radius);
@@ -369,39 +382,59 @@ background: var(--primary);
 color: white;
 transform: translateY(-2px);
 }
-/* Link Card */
+
+/* === LINK CARD: REDESIGNED TO HIGHLIGHT TITLE & DESCRIPTION === */
 .link-card {
 background: white;
 border-radius: var(--border-radius);
-padding: 25px;
+overflow: hidden;
 box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 transition: var(--transition);
 cursor: pointer;
 position: relative;
-border-left: 4px solid var(--info);
+border: 2px solid transparent;
+display: flex;
+flex-direction: column;
 }
 .link-card:hover {
-transform: translateX(10px);
-box-shadow: 0 12px 40px rgba(59, 130, 246, 0.3);
+transform: translateY(-8px);
+box-shadow: 0 12px 35px rgba(59, 130, 246, 0.25);
+border-color: var(--info);
 z-index: 10;
 }
-.link-card-icon {
-width: 50px;
-height: 50px;
-border-radius: 14px;
-background: linear-gradient(135deg, var(--info), #60a5fa);
+.link-card-thumb {
+width: 100%;
+height: 140px;
+background: #f8fafc;
+position: relative;
+overflow: hidden;
+}
+.link-card-thumb img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+.link-card-thumb .fallback-icon {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 3rem;
+color: var(--info);
+display: none;
+}
+.link-card-content {
+padding: 20px;
+flex-grow: 1;
 display: flex;
-align-items: center;
-justify-content: center;
-margin-bottom: 18px;
-font-size: 1.8rem;
-color: white;
+flex-direction: column;
 }
 .link-card-title {
 font-size: 1.25rem;
 font-weight: 700;
 color: var(--dark);
 margin-bottom: 10px;
+line-height: 1.4;
 display: -webkit-box;
 -webkit-line-clamp: 2;
 -webkit-box-orient: vertical;
@@ -414,11 +447,14 @@ margin-bottom: 12px;
 display: block;
 word-break: break-all;
 font-weight: 500;
+text-decoration: none;
 }
 .link-card-description {
 color: var(--gray);
 font-size: 0.95rem;
 line-height: 1.6;
+margin-bottom: 15px;
+flex-grow: 1;
 display: -webkit-box;
 -webkit-line-clamp: 3;
 -webkit-box-orient: vertical;
@@ -428,17 +464,20 @@ overflow: hidden;
 display: flex;
 justify-content: space-between;
 align-items: center;
-margin-top: 15px;
 padding-top: 15px;
 border-top: 1px solid #e5e7eb;
 }
 .link-card-meta {
 display: flex;
 align-items: center;
-gap: 8px;
+gap: 10px;
 color: var(--gray);
 font-size: 0.85rem;
 }
+.link-card-meta i {
+color: var(--info);
+}
+
 /* Empty State */
 .empty-state {
 text-align: center;
@@ -486,7 +525,8 @@ gap: 12px;
 transform: translateY(-3px);
 box-shadow: 0 12px 35px rgba(99, 102, 241, 0.6);
 }
-/* Loading State */
+
+/* Loading, Error, Modal styles */
 .loading-container {
 min-height: 500px;
 display: flex;
@@ -524,7 +564,6 @@ font-size: 1.2rem;
 0% { transform: rotate(0deg); }
 100% { transform: rotate(360deg); }
 }
-/* Error State */
 .error-container {
 text-align: center;
 padding: 70px 30px;
@@ -589,7 +628,6 @@ background: var(--primary);
 color: white;
 transform: translateY(-3px);
 }
-/* Image Preview Modal - FIXED VERSION */
 .image-modal {
 position: fixed;
 top: 0;
@@ -687,7 +725,6 @@ border-radius: 10px;
 background: var(--primary);
 border-radius: 10px;
 }
-/* Modal Form */
 .modal-content {
 border-radius: 24px;
 border: none;
@@ -795,7 +832,6 @@ animation: slideDown 0.4s ease;
 from { transform: translateY(-30px); opacity: 0; }
 to { transform: translateY(0); opacity: 1; }
 }
-/* Setup Guide Modal */
 .setup-guide {
 background: #f9fafb;
 border-radius: 12px;
@@ -826,27 +862,28 @@ border: 1px solid #e5e7eb;
 </style>
 </head>
 <body>
+<!-- Top-left Stat Badges -->
+<div class="stat-badges">
+  <div class="stat-badge total">
+    <i class="fas fa-th-large"></i>
+    <span id="badgeTotal">0</span>
+  </div>
+  <div class="stat-badge images">
+    <i class="fas fa-image"></i>
+    <span id="badgeImages">0</span>
+  </div>
+  <div class="stat-badge links">
+    <i class="fas fa-link"></i>
+    <span id="badgeLinks">0</span>
+  </div>
+</div>
+
 <div class="container">
-<!-- Header Section -->
+<!-- Header Section - Title Only -->
 <div class="header-section">
 <h1 class="header-title">
 <i class="fas fa-images"></i> Media & Link Manager
 </h1>
-<p class="header-subtitle">Organize your images and links in one beautiful place. Click images to view full size, click links to open them.</p>
-<div class="stats-container">
-<div class="stat-item">
-<span class="stat-number" id="totalItems">0</span>
-<span class="stat-label">Total Items</span>
-</div>
-<div class="stat-item">
-<span class="stat-number" id="imageCount">0</span>
-<span class="stat-label">Images</span>
-</div>
-<div class="stat-item">
-<span class="stat-number" id="linkCount">0</span>
-<span class="stat-label">Links</span>
-</div>
-</div>
 </div>
 
 <!-- Filter Tabs -->
@@ -861,6 +898,14 @@ border: 1px solid #e5e7eb;
 <button class="tab-btn" data-filter="links">
 <i class="fas fa-link"></i> Links Only
 </button>
+</div>
+<div class="search-container mt-3">
+<input
+type="text"
+id="searchInput"
+class="form-control"
+placeholder="Search by URL, title, or description..."
+/>
 </div>
 </div>
 
@@ -894,7 +939,7 @@ border: 1px solid #e5e7eb;
 <i class="fas fa-folder-open"></i>
 </div>
 <h3 class="empty-title">No Content Yet</h3>
-<p class="empty-subtitle">Add your first image or link to get started. You can add images by providing direct image URLs (ending in .jpg, .png, .gif, etc.) or regular website links.</p>
+<p class="empty-subtitle">Add your first image or link to get started.</p>
 <button class="empty-btn" data-bs-toggle="modal" data-bs-target="#addLinkModal">
 <i class="fas fa-plus-circle"></i> Add First Item
 </button>
@@ -914,7 +959,7 @@ border: 1px solid #e5e7eb;
 </button>
 </div>
 
-<!-- Image Preview Modal - CORRECTED -->
+<!-- Image Preview Modal -->
 <div class="image-modal" id="imageModal">
 <div class="image-modal-content">
 <img src="" alt="Image Preview" class="image-modal-img" id="modalImage" onerror="this.src='https://via.placeholder.com/800x600?text=Image+Not+Available'">
@@ -1002,7 +1047,6 @@ placeholder="Write a brief description..."
 </div>
 </div>
 </div>
-</div>
 
 <!-- Setup Guide Modal -->
 <div class="modal fade" id="setupModal" tabindex="-1" aria-hidden="true">
@@ -1050,14 +1094,11 @@ Find <code>GOOGLE_SHEET_ID = '...'</code> and replace with your ID
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ════════════════════════════════════════════════════════════════════════════════
-// 🔑 CONFIGURATION - UPDATE THESE VALUES WITH YOUR OWN
-// ════════════════════════════════════════════════════════════════════════════════
+// CONFIGURATION
 const GOOGLE_SHEET_ID = '14e9RYeZjBoMgVTJO3I2OAdBTpIttKaCKb8NaC_pN_aY';
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4FmQrmTFGcFcp4nsCmKNaZ0o2XL8Hso3_kvpVyQ5lbgA77naxcutpx4JL0BZ6xjW42A/exec';
-// ════════════════════════════════════════════════════════════════════════════════
+
 // DOM Elements
-// ════════════════════════════════════════════════════════════════════════════════
 const form = document.getElementById('dataForm');
 const itemUrlInput = document.getElementById('itemUrl');
 const urlPreview = document.getElementById('urlPreview');
@@ -1069,10 +1110,11 @@ const errorSection = document.getElementById('errorSection');
 const emptySection = document.getElementById('emptySection');
 const mediaGrid = document.getElementById('mediaGrid');
 const errorMessageEl = document.getElementById('errorMessage');
-const totalItemsEl = document.getElementById('totalItems');
-const imageCountEl = document.getElementById('imageCount');
-const linkCountEl = document.getElementById('linkCount');
+const badgeTotal = document.getElementById('badgeTotal');
+const badgeImages = document.getElementById('badgeImages');
+const badgeLinks = document.getElementById('badgeLinks');
 const tabButtons = document.querySelectorAll('.tab-btn');
+const searchInput = document.getElementById('searchInput');
 const imageModal = document.getElementById('imageModal');
 const modalImage = document.getElementById('modalImage');
 const modalTitle = document.getElementById('modalTitle');
@@ -1080,9 +1122,9 @@ const modalDescription = document.getElementById('modalDescription');
 const closeImageModalBtn = document.getElementById('closeImageModal');
 let allItems = [];
 let currentFilter = 'all';
-// ════════════════════════════════════════════════════════════════════════════════
-// URL Preview
-// ════════════════════════════════════════════════════════════════════════════════
+let currentSearchQuery = '';
+
+// Event Listeners
 itemUrlInput.addEventListener('input', function() {
 const url = this.value.trim();
 if (url) {
@@ -1092,9 +1134,7 @@ urlPreview.classList.add('show');
 urlPreview.classList.remove('show');
 }
 });
-// ════════════════════════════════════════════════════════════════════════════════
-// Save to Google Sheet
-// ════════════════════════════════════════════════════════════════════════════════
+
 form.addEventListener('submit', async function(e) {
 e.preventDefault();
 const itemUrl = itemUrlInput.value.trim();
@@ -1106,7 +1146,6 @@ showStatus('⚠️ Please fill in URL and Title fields.', 'alert-danger');
 return;
 }
 
-// Validate URL format
 try {
 new URL(itemUrl);
 } catch (e) {
@@ -1169,9 +1208,7 @@ submitBtn.disabled = false;
 buttonText.innerHTML = '<i class="fas fa-save"></i> Save Item';
 }
 });
-// ════════════════════════════════════════════════════════════════════════════════
-// Status Message
-// ════════════════════════════════════════════════════════════════════════════════
+
 function showStatus(message, type) {
 statusMessage.innerHTML = message;
 statusMessage.className = `status-alert alert ${type}`;
@@ -1180,9 +1217,7 @@ if (type === 'alert-success') {
 setTimeout(() => { statusMessage.style.display = 'none'; }, 5000);
 }
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Load Items
-// ════════════════════════════════════════════════════════════════════════════════
+
 async function loadItems() {
 loadingSection.classList.remove('d-none');
 errorSection.classList.add('d-none');
@@ -1220,9 +1255,7 @@ showError(`Failed to load content: ${error.message}<br><br>
 3. Verify your Sheet ID is correct`);
 }
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Parse CSV
-// ════════════════════════════════════════════════════════════════════════════════
+
 function parseCSV(csv) {
 const lines = csv.split('\n').filter(line => line.trim());
 if (lines.length < 2) return [];
@@ -1262,9 +1295,7 @@ isImage: isImage
 }
 return items;
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Render Items
-// ════════════════════════════════════════════════════════════════════════════════
+
 function renderItems(items) {
 loadingSection.classList.add('d-none');
 errorSection.classList.add('d-none');
@@ -1272,12 +1303,20 @@ emptySection.classList.add('d-none');
 mediaGrid.classList.remove('d-none');
 mediaGrid.innerHTML = '';
 
-// Apply filter
 let filteredItems = items;
 if (currentFilter === 'images') {
 filteredItems = items.filter(item => item.isImage);
 } else if (currentFilter === 'links') {
 filteredItems = items.filter(item => !item.isImage);
+}
+
+const query = currentSearchQuery.trim().toLowerCase();
+if (query) {
+filteredItems = filteredItems.filter(item =>
+item.url.toLowerCase().includes(query) ||
+item.title.toLowerCase().includes(query) ||
+item.description.toLowerCase().includes(query)
+);
 }
 
 if (filteredItems.length === 0) {
@@ -1293,9 +1332,8 @@ renderLinkCard(item);
 }
 });
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Render Image Card
-// ════════════════════════════════════════════════════════════════════════════════
+
+// IMAGE CARD: EXACTLY AS BEFORE
 function renderImageCard(item) {
 const card = document.createElement('div');
 card.className = 'image-card';
@@ -1321,122 +1359,85 @@ card.innerHTML = `
 </div>
 `;
 
-// View full size image - MAIN CLICK HANDLER
 card.addEventListener('click', (e) => {
-// Prevent triggering when clicking action buttons or links
-if (e.target.closest('.action-btn') || e.target.closest('a')) {
-return;
-}
+if (e.target.closest('.action-btn') || e.target.closest('a')) return;
 showImageModal(item);
 });
 
-// View button click handler
-const viewBtn = card.querySelector('.view-btn');
-viewBtn.addEventListener('click', (e) => {
+card.querySelector('.view-btn').addEventListener('click', (e) => {
 e.stopPropagation();
 showImageModal(item);
 });
 
-// Download button - no need for special handler since it's a link
-
 mediaGrid.appendChild(card);
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Render Link Card
-// ════════════════════════════════════════════════════════════════════════════════
+
+// LINK CARD: REDESIGNED TO EMPHASIZE TITLE & DESCRIPTION
 function renderLinkCard(item) {
+const thumbUrl = `https://mini.s-shot.ru/300x200/JPEG/?${encodeURIComponent(item.url)}`;
+
 const card = document.createElement('div');
 card.className = 'link-card';
 card.innerHTML = `
-<div class="link-card-icon">
-${getDomainIcon(item.url)}
+<div class="link-card-thumb">
+  <img src="${escapeHtml(thumbUrl)}" alt="Preview of ${escapeHtml(item.title)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+  <div class="fallback-icon">${getDomainIcon(item.url)}</div>
 </div>
-<h3 class="link-card-title">${escapeHtml(item.title)}</h3>
-<a href="${escapeHtml(item.url)}" target="_blank" class="link-card-url">${getDomainFromUrl(item.url)}</a>
-<p class="link-card-description">${escapeHtml(item.description || 'No description available')}</p>
-<div class="link-card-footer">
-<div class="link-card-meta">
-<i class="fas fa-link"></i>
-<span>Website Link</span>
-</div>
-<a href="${escapeHtml(item.url)}" target="_blank" class="action-btn">
-<i class="fas fa-external-link-alt"></i>
-</a>
+<div class="link-card-content">
+  <h3 class="link-card-title">${escapeHtml(item.title)}</h3>
+  <a href="${escapeHtml(item.url)}" target="_blank" class="link-card-url">${getDomainFromUrl(item.url)}</a>
+  <p class="link-card-description">${escapeHtml(item.description || 'No description available')}</p>
+  <div class="link-card-footer">
+    <div class="link-card-meta">
+      <i class="fas fa-link"></i>
+      <span>Website Link</span>
+    </div>
+    <a href="${escapeHtml(item.url)}" target="_blank" class="action-btn">
+      <i class="fas fa-external-link-alt"></i>
+    </a>
+  </div>
 </div>
 `;
 
-// Make entire card clickable to open link
 card.addEventListener('click', (e) => {
-// Don't trigger if clicking on interactive elements
-if (e.target.tagName === 'A' || e.target.closest('a') || e.target.closest('.action-btn')) {
-return;
-}
+if (e.target.tagName === 'A' || e.target.closest('a') || e.target.closest('.action-btn')) return;
 window.open(item.url, '_blank', 'noopener,noreferrer');
 });
 
 mediaGrid.appendChild(card);
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Image Modal Functions - COMPLETELY REWRITTEN
-// ════════════════════════════════════════════════════════════════════════════════
+
 function showImageModal(item) {
-console.log('Opening modal for:', item.title); // Debug log
-  
-// Set modal content
 modalImage.src = item.url;
-modalImage.alt = item.title;
 modalTitle.textContent = item.title;
 modalDescription.textContent = item.description || 'No description available';
   
-// Show modal with delay to ensure image starts loading
 setTimeout(() => {
 imageModal.classList.add('active');
-document.body.style.overflow = 'hidden'; // Prevent background scrolling
+document.body.style.overflow = 'hidden';
 }, 50);
-  
-// Preload image for better experience
-const preloadImg = new Image();
-preloadImg.src = item.url;
-preloadImg.onload = () => {
-console.log('Image loaded successfully');
-};
-preloadImg.onerror = () => {
-console.log('Failed to load image');
-};
 }
 
 function closeImageModal() {
 imageModal.classList.remove('active');
-document.body.style.overflow = ''; // Restore scrolling
-// Don't clear src to avoid flicker on reopen
+document.body.style.overflow = '';
 }
 
-// Close button event listener
 closeImageModalBtn.addEventListener('click', closeImageModal);
-
-// Close modal when clicking outside content
 imageModal.addEventListener('click', (e) => {
-if (e.target === imageModal) {
-closeImageModal();
-}
+if (e.target === imageModal) closeImageModal();
 });
-
-// Close modal with Escape key
 document.addEventListener('keydown', (e) => {
 if (e.key === 'Escape' && imageModal.classList.contains('active')) {
 closeImageModal();
 }
 });
-
-// Prevent image drag
 document.addEventListener('dragstart', (e) => {
 if (e.target.tagName === 'IMG' && imageModal.classList.contains('active')) {
 e.preventDefault();
 }
 });
-// ════════════════════════════════════════════════════════════════════════════════
-// Filter Functions
-// ════════════════════════════════════════════════════════════════════════════════
+
 tabButtons.forEach(btn => {
 btn.addEventListener('click', () => {
 tabButtons.forEach(b => b.classList.remove('active'));
@@ -1445,18 +1446,19 @@ currentFilter = btn.dataset.filter;
 renderItems(allItems);
 });
 });
-// ════════════════════════════════════════════════════════════════════════════════
-// Empty State
-// ════════════════════════════════════════════════════════════════════════════════
+
+searchInput.addEventListener('input', () => {
+currentSearchQuery = searchInput.value;
+renderItems(allItems);
+});
+
 function showEmptyState() {
 loadingSection.classList.add('d-none');
 errorSection.classList.add('d-none');
 mediaGrid.classList.add('d-none');
 emptySection.classList.remove('d-none');
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Show Error
-// ════════════════════════════════════════════════════════════════════════════════
+
 function showError(message) {
 loadingSection.classList.add('d-none');
 emptySection.classList.add('d-none');
@@ -1464,19 +1466,17 @@ mediaGrid.classList.add('d-none');
 errorSection.classList.remove('d-none');
 errorMessageEl.innerHTML = message;
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Update Stats
-// ════════════════════════════════════════════════════════════════════════════════
+
 function updateStats(items) {
 const images = items.filter(item => item.isImage).length;
 const links = items.filter(item => !item.isImage).length;
-totalItemsEl.textContent = items.length;
-imageCountEl.textContent = images;
-linkCountEl.textContent = links;
+const total = items.length;
+
+badgeTotal.textContent = total;
+badgeImages.textContent = images;
+badgeLinks.textContent = links;
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Helper Functions
-// ════════════════════════════════════════════════════════════════════════════════
+
 function getDomainFromUrl(url) {
 try {
 return new URL(url).hostname.replace('www.', '').replace('m.', '');
@@ -1518,21 +1518,10 @@ const div = document.createElement('div');
 div.textContent = text;
 return div.innerHTML;
 }
-// ════════════════════════════════════════════════════════════════════════════════
-// Initialize
-// ════════════════════════════════════════════════════════════════════════════════
+
 document.addEventListener('DOMContentLoaded', () => {
 if (!document.referrerPolicy) document.referrerPolicy = "strict-origin-when-cross-origin";
 setTimeout(loadItems, 300);
-  
-// Add global click handler to close modal
-document.addEventListener('click', (e) => {
-if (imageModal.classList.contains('active') && 
-    !e.target.closest('.image-modal-content') && 
-    !e.target.closest('.image-card')) {
-// Don't auto-close when clicking on cards or modal content
-}
-});
 });
 </script>
 </body>
